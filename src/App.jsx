@@ -99,9 +99,6 @@
 
 import { useState } from "react";
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8dGM8QIWG6OwDu6LT4UtgLH0yPfaIPu_ahGBGWcwEdffvOBB7eqb0gTelSFUD4QcF/exec";
-
-
 export default function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -113,18 +110,17 @@ export default function App() {
     if (!email) return alert("Please enter your email");
 
     try {
-      // Use FormData to avoid CORS preflight
       const formData = new FormData();
       formData.append("name", name);
       formData.append("email", email);
       formData.append("feedback", feedback);
 
-      const res = await fetch(GOOGLE_SCRIPT_URL, {
+      // Call Vercel serverless function
+      const res = await fetch("/api/submit", {
         method: "POST",
         body: formData,
       });
 
-      // Apps Script returns text, parse manually
       const text = await res.text();
       const result = JSON.parse(text);
 
@@ -134,7 +130,7 @@ export default function App() {
         setEmail("");
         setFeedback("");
       } else {
-        throw new Error();
+        throw new Error(result.message || "Failed to submit");
       }
     } catch (err) {
       console.error(err);
@@ -201,4 +197,3 @@ export default function App() {
     </div>
   );
 }
-
