@@ -105,38 +105,40 @@ export default function App() {
   const [feedback, setFeedback] = useState("");
   const [status, setStatus] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return alert("Please enter your email");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!email) return alert("Please enter your email");
 
-    try {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("email", email);
-      formData.append("feedback", feedback);
+  try {
+    const res = await fetch("https://socially-landingbackend.onrender.com/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ name, email, feedback }).toString(),
+    });
 
-      // Call Vercel serverless function
-      const res = await fetch("/api/submit", {
-        method: "POST",
-        body: formData,
-      });
+    const data = await res.json();
 
-      const text = await res.text();
-      const result = JSON.parse(text);
+    if (data.success) {
+      // Parse Google Script JSON string
+      const gsResponse = JSON.parse(data.message);
 
-      if (result.status === "success") {
+      if (gsResponse.status === "success") {
         setStatus("✅ Thank you! You’re on the early access list.");
         setName("");
         setEmail("");
         setFeedback("");
       } else {
-        throw new Error(result.message || "Failed to submit");
+        throw new Error(gsResponse.message || "Failed to submit");
       }
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Something went wrong. Please try again.");
+    } else {
+      throw new Error(data.error || "Failed to submit");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    setStatus("❌ Something went wrong. Please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 via-indigo-900 to-black text-white flex flex-col items-center justify-center p-6">
