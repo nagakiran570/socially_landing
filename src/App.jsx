@@ -116,29 +116,21 @@ export default function App() {
       body: new URLSearchParams({ name, email, feedback }).toString(),
     });
 
-    const data = await res.json();
+    const result = await res.json();
 
-    if (data.success) {
-      // Parse Google Script JSON string
-      const gsResponse = JSON.parse(data.message);
-
-      if (gsResponse.status === "success") {
-        setStatus("✅ Thank you! You’re on the early access list.");
-        setName("");
-        setEmail("");
-        setFeedback("");
-      } else {
-        throw new Error(gsResponse.message || "Failed to submit");
-      }
+    if (result.status === "success") {
+      setStatus("✅ Thank you! You’re on the early access list.");
+      setName("");
+      setEmail("");
+      setFeedback("");
     } else {
-      throw new Error(data.error || "Failed to submit");
+      throw new Error(result.message || "Failed to submit");
     }
   } catch (err) {
     console.error(err);
     setStatus("❌ Something went wrong. Please try again.");
   }
 };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-800 via-indigo-900 to-black text-white flex flex-col items-center justify-center p-6">
