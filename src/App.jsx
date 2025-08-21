@@ -93,6 +93,11 @@ export default function App() {
   src="/mockup-dashboard.png"
   alt="Dashboard mockup"
   className="mt-6 w-full max-w-md rounded-lg shadow-md"
+/> 
+  <img
+  src="/postcomposer.png"
+  alt="Post composer mockup"
+  className="mt-6 w-full max-w-md rounded-lg shadow-md"
 />
 
       </div>
